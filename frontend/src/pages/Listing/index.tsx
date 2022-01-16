@@ -10,9 +10,25 @@ function Listing() {
 
 
     // uso do hook UseState
-    // useState(0) - define o usestate inicializa o pagenumbr com 0 
 
+    // useState(0) - define o usestate inicializa o pagenumbr com 0 
     const [pageNumber, setPageNumber] = useState(0);
+
+    // useState(0) - define o usestate inicial para a pagina com valores copiados dos types/movie.ts
+    // e coloca os defaluts
+    //useState<MoviePage> - informa que dados são do tipo do estado é generico Moviepage
+    const [page, setPage] = useState<MoviePage>({
+        content: [],
+        last: true,
+        totalPages: 0,
+        totalElements: 0,
+        size: 12,
+        number: 0,
+        first: true,
+        numberOfElements: 0,
+        empty: true
+    });
+
 
     // uso do hook UseEffect
     //serve para observa o estado do componente - se mudou algo
@@ -25,16 +41,25 @@ function Listing() {
     useEffect(() => {
         // vai executar esta funcao somente na hora que carregar o componente
         // ou se mudar o estado do componente
-        axios.get(`${BASE_URL}/movies?size=12&page=1`)
+        //&sort=id - ordena os filmes por id ou poderia ser por titulo tambem - &sort=title)
+        axios.get(`${BASE_URL}/movies?size=12&page=${pageNumber}&sort=id`)
             .then(response => {
-
-                // pega a resposta da requisição
+               
+                // estado para gardar  a resposta da requisição
                 const data = response.data as MoviePage
-                // seta o número da página
-                console.log(response.data);
-                setPageNumber(data.number);
+                
+                //salva os dados da página vindos da requisição
+                setPage(data);
+
+                // - só para teste- seta o número da página e imprime na console 
+                // console.log(response.data);
+                // setPageNumber(data.number);
+
             })
-    }, []);
+
+        // [pageNumber]); indica que  o useEffect depende do estado do pageNumber
+        // quando mudar o pageNumber refaz a requisição
+    }, [pageNumber]);
 
 
     // codigo do episodio 3 - fazer requisição
@@ -57,36 +82,44 @@ function Listing() {
     // setPageNumber(data.number);
     //      });
 
+    //codigo com filme mockado para teste com props para testes
+       //const movie = {
+       //    id: 1,
+       //    image: "https://www.themoviedb.org/t/p/w533_and_h300_bestv2/jBJWaqoSCiARWtfV0GlqHrcdidd.jpg",
+       //    title: "The Witcher",
+       //    count: 2,
+       //    score: 4.5
+       //};
+
+
+    // no return , se quiser os filmes mockados para teste usar o código abaixo
+       // <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
+       // <MovieCard movie={movie} />
+       // </div>
+    //   <p>{pageNumber}</p> - para exibir o numero da página para testes
+
+    // codigo no return para mostrar os filmes dinamicamente:
+    // {page.content.map(movie => ( -page.content - permite acessar a lista de filmes
+    // {page.content.map(movie => ( - .map - permite executar algo com cada item da coleção
+    // {page.content.map(movie => ( - movie => ( - funcao que será executada com cada item da coleção
+    // NOTA: numa renderização dinâmica de coleção,cada elemento renderizado DEVE possuir um atributo key
+    // <div key={movie.id} - define qual é o atributo key 
+
     return (
         <>
-
-            <p>{pageNumber}</p>
-
 
             <Pagination />
 
             <div className="container">
                 <div className="row">
-                    <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
-                        <MovieCard />
-                    </div>
-                    <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
-                        <MovieCard />
-                    </div>
-                    <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
-                        <MovieCard />
-                    </div>
-                    <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
-                        <MovieCard />
-                    </div>
-                    <div className="col-sm-6 col-lg-4 col-xl-3 mb-3">
-                        <MovieCard />
-                    </div>
-
+                    {page.content.map(movie => (
+                        <div key={movie.id} className="col-sm-6 col-lg-4 col-xl-3 mb-3">
+                            <MovieCard movie={movie} />
+                        </div>
+                    )
+                    )}
                 </div>
             </div>
-
-
         </>
     );
 }
