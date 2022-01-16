@@ -46,7 +46,7 @@ function Listing() {
             .then(response => {
                
                 // estado para gardar  a resposta da requisição
-                const data = response.data as MoviePage
+                const data = response.data as MoviePage;
                 
                 //salva os dados da página vindos da requisição
                 setPage(data);
@@ -105,10 +105,18 @@ function Listing() {
     // NOTA: numa renderização dinâmica de coleção,cada elemento renderizado DEVE possuir um atributo key
     // <div key={movie.id} - define qual é o atributo key 
 
+    // função para permitir o click dos botoes de avanco/retrocesso de página
+    // para mandar o handlePageChange para o componente Pagination -
+    // lá vai ter uma função/Props  para receber esta mudança de página 
+
+    const handlePageChange = (newPageNumber : number) => {
+        setPageNumber(newPageNumber);
+    }
+
     return (
         <>
 
-            <Pagination />
+            <Pagination page={page}  OnChange={handlePageChange} />
 
             <div className="container">
                 <div className="row">
