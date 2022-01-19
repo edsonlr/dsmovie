@@ -4,7 +4,7 @@ import './styles.css';
 import { Link, useNavigate } from "react-router-dom";
 import { Movie } from 'types/movie';
 import { useEffect, useState } from 'react';
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { BASE_URL } from 'utils/requests';
 import { validateEmail } from 'utils/validate';
 
@@ -19,6 +19,9 @@ type Props = {
 // Form( {movie} : Props) - para receber o id do filme que quer ver
 // só vai receber o Id tipo String do Movie, e não o objeto Movie inteiro
 function FormCard({ movieId }: Props) {
+
+    // lista movieId na console para teste
+    // console.log(movieId);
 
     // definição de filme mockado para testes
     // const movie = {
@@ -39,6 +42,13 @@ function FormCard({ movieId }: Props) {
     // Importante : tem que colocar o [movieId] nas dependências do UseEffect do
     // FormCard , para garantir que  a requisição só seja feita uma vez ou se mudar o movieID
 
+    // lista urlteste na console para teste
+    //   console.log(`${BASE_URL}`,'/movies/',`${movieId}`);
+
+    //  axios.get(`${BASE_URL}/movies/${movieId}`) 
+    //- substituido por http://localhost:8080/movies/5 para testes
+    // axios.get('http://localhost:8080/movies/5')
+
     useEffect(() => {
         axios.get(`${BASE_URL}/movies/${movieId}`)
             .then(response => {
@@ -46,12 +56,15 @@ function FormCard({ movieId }: Props) {
             });
     }, [movieId]);
 
+    // lista titulo do filma  na console para teste
+    //console.log(movie?.title);
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 
         event.preventDefault();
 
         const email = (event.target as any).email.value;
-        const score = (event.target as any).sscore.value;
+        const score = (event.target as any).score.value;
 
         // funcao para testar se sintaxe do email é valida xxx@xmail.com
         if (!validateEmail(email)) {
@@ -70,7 +83,7 @@ function FormCard({ movieId }: Props) {
                 score: score
             }
         }
-        
+
         axios(config).then(response => {
             console.log(response.data);
             navigate("/");
@@ -80,10 +93,12 @@ function FormCard({ movieId }: Props) {
 
     // src={movie?.image} - a interrogação movie? é para garantir que mesmo qque o objeto não exista
     // o código funcione
+    //   <p>{movie}</p> - retirado do return abaixo porque estava dando erro - não renderizava
+
     return (
 
         <div className="dsmovie-form-container">
-            <p>{movie}</p>
+            
             <img className="dsmovie-movie-card-image" src={movie?.image} alt={movie?.title} />
             <div className="dsmovie-card-bottom-container">
                 <h3>{movie?.title}</h3>
